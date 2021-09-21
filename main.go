@@ -5,11 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/raphgl/telegrambot/src/helper"
-
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/raphgl/telegrambot/models"
+	"github.com/raphgl/telegrambot/views"
+	tb "gopkg.in/tucnak/telebot.v2"
 )
 
 // JSON for the config file
@@ -31,33 +32,33 @@ func main() {
 		panic(err)
 	}
 
-	// initialize telegram bot
-	bot, err := tgbotapi.NewBotAPI(configData.APIKey)
-	bot.Debug = false
-	updateConfig := tgbotapi.NewUpdate(0)
-	updateConfig.Timeout = 30
-	updates := bot.GetUpdatesChan(updateConfig)
-
 	// initialize database
 	db, err := sql.Open("mysql", configData.DatabaseSetup)
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
-	helper.SetupDB(db)
 
-	// message receiver
-	for u := range updates {
-		if u.Message == nil {
-			continue
-		}
+	// initialize telegram bot
+	b, err := tb.NewBot(tb.Settings{
+		Token:  configData.APIKey,
+		Poller: &tb.LongPoller{Timeout: 10 * time.Second},
+	})
 
-		msg := tgbotapi.NewMessage(u.Message.Chat.ID, u.Message.Text)
-		msg.ReplyToMessageID = u.Message.MessageID
-
-		if _, err := bot.Send(msg); err != nil {
-			panic(err)
-		}
+	if err != nil {
+		panic(err)
 	}
 
+	// set up database
+	models.SetupDB(db)
+	models.PopulateDictDB(db)
+
+	// show start menu
+	b.Handle("/start", func(m *tb.Message) {
+		views.ShowMainMenu(b, m)
+		b.Handle(tb.OnCallback, func(c *tb.Callback) {
+			b.Respond(c, &tb.CallbackResponse{})
+		})
+	})
+
+	b.Start()
 }
