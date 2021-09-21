@@ -1,8 +1,6 @@
 package views
 
-import (
-	tb "gopkg.in/tucnak/telebot.v2"
-)
+import tb "gopkg.in/tucnak/telebot.v2"
 
 func ShowMainMenu(b *tb.Bot, m *tb.Message) {
 	menu := &tb.ReplyMarkup{}
@@ -22,8 +20,6 @@ func ShowMainMenu(b *tb.Bot, m *tb.Message) {
 	)
 	b.Send(m.Sender, `
 	Welcome to the <b>XPManBot</b>.
- 	XPManBot is a hangman inspired social game where players try to gain as much XP as possible by guessing the letters of a given word. Players can use coins, timing and perks in order to gain advantage over the adversaries. The player with the most XP at the end of the game wins.
-
- 	<i>You can learn more about how the game works by clicking on How To Play.</i>
+	What would you like to do?
 	`, menu, "html")
 }

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"strings"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -54,9 +55,26 @@ func main() {
 
 	// show start menu
 	b.Handle("/start", func(m *tb.Message) {
-		views.ShowMainMenu(b, m)
+		//views.ShowMainMenu(b, m)
+		views.ShowGameInstructions(b, m)
 		b.Handle(tb.OnCallback, func(c *tb.Callback) {
-			b.Respond(c, &tb.CallbackResponse{})
+			var res string
+			// cleans up LF and CR characters from c.Data
+			switch strings.TrimSpace(c.Data) {
+			case "play":
+				res = "Loading Game"
+			case "profile":
+				res = "Loading User Profile"
+			case "balance":
+				res = "Checking Balance"
+			case "ranking":
+				res = "Loading Ranking"
+			case "how_to_play":
+				res = "Loading Tutorial"
+			}
+			b.Respond(c, &tb.CallbackResponse{
+				Text: res,
+			})
 		})
 	})
 
