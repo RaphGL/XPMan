@@ -1,4 +1,4 @@
-module github.com/raphgl/telegrambot
+module github.com/RaphGL/XPMan
 
 go 1.16
 

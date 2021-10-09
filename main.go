@@ -5,12 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"strings"
 	"time"
 
+	"github.com/RaphGL/XPMan/controllers"
+	"github.com/RaphGL/XPMan/models"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/raphgl/telegrambot/models"
-	"github.com/raphgl/telegrambot/views"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
@@ -52,31 +51,9 @@ func main() {
 	// set up database
 	models.SetupDB(db)
 	models.PopulateDictDB(db)
+	controllers.ControlMenuDisplay(b)
 
 	// show start menu
-	b.Handle("/start", func(m *tb.Message) {
-		//views.ShowMainMenu(b, m)
-		views.ShowGameInstructions(b, m)
-		b.Handle(tb.OnCallback, func(c *tb.Callback) {
-			var res string
-			// cleans up LF and CR characters from c.Data
-			switch strings.TrimSpace(c.Data) {
-			case "play":
-				res = "Loading Game"
-			case "profile":
-				res = "Loading User Profile"
-			case "balance":
-				res = "Checking Balance"
-			case "ranking":
-				res = "Loading Ranking"
-			case "how_to_play":
-				res = "Loading Tutorial"
-			}
-			b.Respond(c, &tb.CallbackResponse{
-				Text: res,
-			})
-		})
-	})
 
 	b.Start()
 }
