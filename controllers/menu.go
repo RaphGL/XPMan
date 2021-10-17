@@ -49,20 +49,32 @@ func (mm *menuMsg) setPrevState() {
 	}
 }
 
+func (mm *menuMsg) updateMsg(c *tb.Callback) {
+	mm.bot.Edit(c.Message, mm.cView.GetMsgContent(), mm.cView.GetReplyMarkup())
+}
+
+func (mm *menuMsg) sendMsg() {
+	mm.bot.Send(mm.senderMsg.Chat, mm.cView.GetMsgContent(), mm.cView.GetReplyMarkup())
+}
+
 func ControlMenuDisplay(b *tb.Bot) {
 	b.Handle("/start", func(m *tb.Message) {
 		msg := newMenuMsg(b, m)
-		b.Send(m.Chat, msg.cView.GetMsgContent(), msg.cView.GetReplyMarkup(), tb.ModeHTML)
+		msg.sendMsg()
 
 		b.Handle(tb.OnCallback, func(c *tb.Callback) {
 			// cleans up LF and CR characters from c.Data
 			switch strings.TrimSpace(c.Data) {
-			case "ranking":
-				b.Send(m.Chat, "fuck you")
-			case "how_to_play":
-				b.Send(m.Chat, "test")
-			case "back":
+			case "mainmenu|play":
+			case "mainmenu|profile":
+			case "mainmenu|balance":
+			case "mainmenu|ranking":
+			case "mainmenu|how_to_play":
+				msg.setCurrState(menu.NewTutorial())
+				msg.updateMsg(c)
+			case "mainmenu|back":
 				msg.setPrevState()
+				msg.updateMsg(c)
 			}
 		})
 	})
