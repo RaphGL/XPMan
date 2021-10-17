@@ -2,10 +2,6 @@ package menu
 
 import tb "gopkg.in/tucnak/telebot.v2"
 
-type howtoplay struct {
-	BaseMenu
-}
-
 func NewTutorial() MenuHandle {
 	// game instruction message
 	gi := &tb.ReplyMarkup{}
@@ -14,10 +10,17 @@ func NewTutorial() MenuHandle {
 			gi.Data("◀️ Back", "mainmenu", "back"),
 		),
 	)
-	htp := howtoplay{}
+	htp := BaseMenu{}
 	htp.rm = gi
-	htp.msg = `<b>How To Play</b>
-	XPManBot is a hangman inspired social game where players try to gain as much XP as possible by guessing the letters of a given word. Players can use coins, timing and perks in order to gain advantage over the adversaries. The player with the most XP at the end of the game wins.`
-	htp.msgID = "how_to_play"
+	htp.msg = `<b>HOW TO PLAY</b>
+	XPMan is a hangman like game. You're given a word to guess. People will take turns in guessing a letter of the word. For each correct answer you earn a XP and coins and are allowed to either continue playing or pay coins to skip your turn, player with the most XP in the end wins.
+	
+	<b><i>Coins</i></b>
+	The coins are used to gain advantage over others by buying perks.
+	Some of the available perks are: skipping turns, target a penalty to a user, get tips...
+
+	<b><i>Experience Points</i></b>
+	One gains or loses XP based on where they got an answer right or wrong or whether they skipped a turn. Managing how one acts in-game will affect one's ranking.
+	`
 	return htp
 }

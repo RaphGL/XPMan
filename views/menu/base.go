@@ -12,20 +12,20 @@ type MenuHandle interface {
 
 // Attributes of a menu state
 type BaseMenu struct {
-	msg   string
-	rm    *tb.ReplyMarkup
-	msgID string
+	// Message content
+	msg string
+	// Message reply markup
+	rm *tb.ReplyMarkup
+	// embed the menuhandle interface
 	MenuHandle
 }
 
+// Get message text
 func (b BaseMenu) GetMsgContent() string {
 	return b.msg
 }
 
-func (b BaseMenu) GetMsgID() string {
-	return b.msgID
-}
-
+// Get the message's reply markup
 func (b BaseMenu) GetReplyMarkup() *tb.ReplyMarkup {
 	return b.rm
 }

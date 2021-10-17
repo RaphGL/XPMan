@@ -49,14 +49,17 @@ func (mm *menuMsg) setPrevState() {
 	}
 }
 
+// Updates message content when state is changed
 func (mm *menuMsg) updateMsg(c *tb.Callback) {
-	mm.bot.Edit(c.Message, mm.cView.GetMsgContent(), mm.cView.GetReplyMarkup())
+	mm.bot.Edit(c.Message, mm.cView.GetMsgContent(), mm.cView.GetReplyMarkup(), tb.ModeHTML)
 }
 
+// Sends message to the user's chat
 func (mm *menuMsg) sendMsg() {
-	mm.bot.Send(mm.senderMsg.Chat, mm.cView.GetMsgContent(), mm.cView.GetReplyMarkup())
+	mm.bot.Send(mm.senderMsg.Chat, mm.cView.GetMsgContent(), mm.cView.GetReplyMarkup(), tb.ModeHTML)
 }
 
+// control how menu msg is displayed
 func ControlMenuDisplay(b *tb.Bot) {
 	b.Handle("/start", func(m *tb.Message) {
 		msg := newMenuMsg(b, m)
@@ -65,17 +68,17 @@ func ControlMenuDisplay(b *tb.Bot) {
 		b.Handle(tb.OnCallback, func(c *tb.Callback) {
 			// cleans up LF and CR characters from c.Data
 			switch strings.TrimSpace(c.Data) {
+			case "mainmenu|back":
+				msg.setPrevState()
 			case "mainmenu|play":
+				msg.setCurrState(menu.NewPlay())
 			case "mainmenu|profile":
 			case "mainmenu|balance":
 			case "mainmenu|ranking":
 			case "mainmenu|how_to_play":
 				msg.setCurrState(menu.NewTutorial())
-				msg.updateMsg(c)
-			case "mainmenu|back":
-				msg.setPrevState()
-				msg.updateMsg(c)
 			}
+			msg.updateMsg(c)
 		})
 	})
 }

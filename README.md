@@ -52,7 +52,7 @@ XPMan is a hangman like game for Telegram Messenger where players have to guess 
 
 ### Built With
 
-* [go-telegram-bot-api](https://go-telegram-bot-api.dev/)
+* [telebot](https://github.com/tucnak/telebot)
 * [todo]()
 
 

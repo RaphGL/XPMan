@@ -4,10 +4,6 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-type mainMenu struct {
-	BaseMenu
-}
-
 func NewMainMenu() MenuHandle {
 	menu := &tb.ReplyMarkup{}
 	menu.Inline(
@@ -25,12 +21,14 @@ func NewMainMenu() MenuHandle {
 		),
 	)
 
-	m := mainMenu{}
+	m := BaseMenu{}
 	m.rm = menu
 	m.msg = `
-	Welcome to the <b>XPManBot</b>.
-	What would you like to do?
+	Welcome to the <b>XPManBot</b>. 
+	This bot is currently in beta and may not function properly. 
+	If you wish to report any issues with the bot or suggest new gaming modes. Please click on <i>Contribute Code</i>
+
+	<b>What would you like to do?</b>
 	`
-	m.msgID = "mainmenu"
 	return m
 }
