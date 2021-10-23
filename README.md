@@ -73,10 +73,11 @@ To self-host this bot you will need to have the Go compiler installed on your sy
    ```sh
    go build
    ```
-4. Enter your API in `config.json` or use the `$TGBOT_API_KEY` env variable (the variable takes precedence over the json file)
+4. Enter your API in `config.json` or use the `$TGBOT_API_KEY` env variable (the variable takes precedence over the json file). Create the XPMan database and provide it's setup on database_setup.
    ```js
    {
        "api_key": "your_api_key",
+       "database_setup": "root:password@tcp(ip_address:port)/database_name"
    }
    ```
 
