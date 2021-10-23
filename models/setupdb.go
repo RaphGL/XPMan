@@ -8,25 +8,17 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type dictData struct {
-	word       string
-	tip1       string
-	tip2       string
-	tip3       string
-	difficulty string
-}
-
 // Creates tables used by the bot
 // db = variable with the opened database
 func SetupDB(db *sql.DB) {
 	db.Exec(`
 		CREATE TABLE IF NOT EXISTS players (
-			player_id INT NOT NULL AUTO_INCREMENT,
 			telegram_uid VARCHAR(25) NOT NULL,
-			level INT NOT NULL,
-			xp_points INT NOT NULL,
-			games_played INT NOT NULL,
-			PRIMARY KEY ( player_id )
+			xp_points INT NOT NULL DEFAULT 0,
+			games_won INT NOT NULL DEFAULT 0,
+			games_lost INT NOT NULL DEFAULT 0,
+			last_played DATE DEFAULT CURRENT_DATE(),
+			PRIMARY KEY ( telegram_uid )
 		);
 	`)
 	db.Exec(`
@@ -69,6 +61,9 @@ func PopulateDictDB(db *sql.DB) {
 	}
 	defer csvFile.Close()
 	csvData, err := csv.NewReader(csvFile).ReadAll()
+	if err != nil {
+		panic("Invalid csv file")
+	}
 
 	// add table rows to database
 	for _, row := range csvData {

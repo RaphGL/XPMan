@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"container/list"
+	"database/sql"
 	"strings"
 
+	"github.com/RaphGL/XPMan/models"
 	"github.com/RaphGL/XPMan/views/menu"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -27,20 +29,20 @@ func newMenuMsg(b *tb.Bot, m *tb.Message) menuMsg {
 }
 
 // Retrieve the current menu view
-func (mm *menuMsg) getCurrState() menu.MenuHandle {
+func (mm *menuMsg) currState() menu.MenuHandle {
 	return mm.cView
 }
 
 // Set current menu view struct
 func (mm *menuMsg) setCurrState(ms menu.MenuHandle) {
-	mm.pView.PushFront(mm.getCurrState())
+	mm.pView.PushFront(mm.currState())
 	mm.cView = ms
 }
 
 // Go back to a previous menu view state
 func (mm *menuMsg) setPrevState() {
 	s := mm.pView.Front()
-	mm.pView.PushFront(mm.getCurrState())
+	mm.pView.PushFront(mm.currState())
 	defer mm.pView.Remove(s)
 
 	pState, ok := (s.Value).(menu.MenuHandle)
@@ -51,19 +53,19 @@ func (mm *menuMsg) setPrevState() {
 
 // Updates message content when state is changed
 func (mm *menuMsg) updateMsg(c *tb.Callback) {
-	mm.bot.Edit(c.Message, mm.cView.GetMsgContent(), mm.cView.GetReplyMarkup(), tb.ModeHTML)
+	mm.bot.Edit(c.Message, mm.cView.MsgContent(), mm.cView.ReplyMarkup(), tb.ModeHTML)
 }
 
 // Sends message to the user's chat
-func (mm *menuMsg) sendMsg() {
-	mm.bot.Send(mm.senderMsg.Chat, mm.cView.GetMsgContent(), mm.cView.GetReplyMarkup(), tb.ModeHTML)
+func (mm *menuMsg) sendMenuMsg() {
+	mm.bot.Send(mm.senderMsg.Chat, mm.cView.MsgContent(), mm.cView.ReplyMarkup(), tb.ModeHTML)
 }
 
 // control how menu msg is displayed
-func ControlMenuDisplay(b *tb.Bot) {
+func ControlMenuDisplay(b *tb.Bot, db *sql.DB) {
 	b.Handle("/start", func(m *tb.Message) {
 		msg := newMenuMsg(b, m)
-		msg.sendMsg()
+		msg.sendMenuMsg()
 
 		b.Handle(tb.OnCallback, func(c *tb.Callback) {
 			// cleans up LF and CR characters from c.Data
@@ -73,6 +75,13 @@ func ControlMenuDisplay(b *tb.Bot) {
 			case "mainmenu|play":
 				msg.setCurrState(menu.NewPlay())
 			case "mainmenu|profile":
+				res, err := models.UserInfo(c.Sender.ID, db)
+				if err != nil {
+					b.Send(c.Message.Chat, "Could not get profile info.")
+					break
+				}
+				p := menu.NewProfile(c.Sender.Username, res.XPPoints, res.GamesWon, res.GamesLost, res.LastPlayed)
+				b.Send(c.Message.Chat, p.MsgContent(), p.ReplyMarkup(), tb.ModeHTML)
 			case "mainmenu|balance":
 			case "mainmenu|ranking":
 			case "mainmenu|how_to_play":

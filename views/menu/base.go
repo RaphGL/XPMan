@@ -5,9 +5,9 @@ import tb "gopkg.in/tucnak/telebot.v2"
 // Basic functions of all menu views
 type MenuHandle interface {
 	HCallback(*tb.Callback)
-	GetMsgID() string
-	GetMsgContent() string
-	GetReplyMarkup() *tb.ReplyMarkup
+	MsgID() string
+	MsgContent() string
+	ReplyMarkup() *tb.ReplyMarkup
 }
 
 // Attributes of a menu state
@@ -21,11 +21,11 @@ type BaseMenu struct {
 }
 
 // Get message text
-func (b BaseMenu) GetMsgContent() string {
+func (b BaseMenu) MsgContent() string {
 	return b.msg
 }
 
 // Get the message's reply markup
-func (b BaseMenu) GetReplyMarkup() *tb.ReplyMarkup {
+func (b BaseMenu) ReplyMarkup() *tb.ReplyMarkup {
 	return b.rm
 }

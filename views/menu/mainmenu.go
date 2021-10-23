@@ -12,7 +12,6 @@ func NewMainMenu() MenuHandle {
 		),
 		menu.Row(
 			menu.Data("👤 View Profile", "mainmenu", "profile"),
-			menu.Data("🏦 View Balance", "mainmenu", "balance"),
 			menu.Data("🏅 View Ranking", "mainmenu", "ranking"),
 		),
 		menu.Row(

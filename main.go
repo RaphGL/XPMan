@@ -51,7 +51,7 @@ func main() {
 	// set up database
 	models.SetupDB(db)
 	models.PopulateDictDB(db)
-	controllers.ControlMenuDisplay(b)
+	controllers.ControlMenuDisplay(b, db)
 
 	// show start menu
 
