@@ -13,7 +13,7 @@ import (
 func SetupDB(db *sql.DB) {
 	db.Exec(`
 		CREATE TABLE IF NOT EXISTS players (
-			telegram_uid VARCHAR(25) NOT NULL,
+			telegram_uid INT NOT NULL,
 			xp_points INT NOT NULL DEFAULT 0,
 			games_won INT NOT NULL DEFAULT 0,
 			games_lost INT NOT NULL DEFAULT 0,
@@ -23,19 +23,21 @@ func SetupDB(db *sql.DB) {
 	`)
 	db.Exec(`
 		CREATE TABLE IF NOT EXISTS active_games (
-			chat_id INT NOT NULL, 
-			num_participants INT NOT NULL,
+			chat_id BIGINT NOT NULL, 
+			num_participants INT NOT NULL DEFAULT 1,
+			host_id INT NOT NULL,
 			PRIMARY KEY ( chat_id )
 		);
 	`)
 	db.Exec(`
 		CREATE TABLE IF NOT EXISTS active_matches (
-			chat_id INT NOT NULL AUTO_INCREMENT,
-			participant_uid VARCHAR(25) NOT NULL,
-			attempts_available INT NOT NULL,
-			ncoins INT NOT NULL,
-			guessed_right VARCHAR(25),
-			guessed_wrong VARCHAR(25),
+			chat_id BIGINT NOT NULL,
+			part_username VARCHAR(20) NOT NULL,
+			participant_uid INT NOT NULL,
+			attempts_available INT NOT NULL DEFAULT 0,
+			ncoins INT NOT NULL DEFAULT 0,
+			guessed_right VARCHAR(25) DEFAULT 0,
+			guessed_wrong VARCHAR(25) DEFAULT 0,
 			PRIMARY KEY ( chat_id )
 		);
 	`)

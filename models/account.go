@@ -11,12 +11,14 @@ type Player struct {
 	LastPlayed string
 }
 
+// Adds a player if player is not already in DB
 func CheckAndAddPlayerAcc(userID int, db *sql.DB) {
 	if db.QueryRow("SELECT telegram_uid FROM players where telegram_uid = ?", userID).Err() != nil {
 		db.Exec("INSERT INTO players (telegram_uid) VALUES (?)", userID)
 	}
 }
 
+// Retrieves user information
 func UserInfo(userID int, db *sql.DB) (Player, error) {
 	CheckAndAddPlayerAcc(userID, db)
 	player := Player{}

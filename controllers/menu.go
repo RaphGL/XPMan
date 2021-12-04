@@ -3,9 +3,10 @@ package controllers
 import (
 	"container/list"
 	"database/sql"
+	"fmt"
 	"strings"
 
-	"github.com/RaphGL/XPMan/models"
+	"github.com/RaphGL/XPMan/models/game"
 	"github.com/RaphGL/XPMan/views/menu"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -66,27 +67,44 @@ func ControlMenuDisplay(b *tb.Bot, db *sql.DB) {
 	b.Handle("/start", func(m *tb.Message) {
 		msg := newMenuMsg(b, m)
 		msg.sendMenuMsg()
+		var host string
 
 		b.Handle(tb.OnCallback, func(c *tb.Callback) {
 			// cleans up LF and CR characters from c.Data
 			switch strings.TrimSpace(c.Data) {
 			case "mainmenu|back":
 				msg.setPrevState()
+
 			case "mainmenu|play":
-				msg.setCurrState(menu.NewPlay())
+				host = c.Sender.Username
+				msg.setCurrState(menu.NewPlay(c.Sender.Username, []string{}))
+				game.CreateGame(c, db)
+
 			case "mainmenu|profile":
-				res, err := models.UserInfo(c.Sender.ID, db)
+				p, err := menu.NewProfile(c, db)
 				if err != nil {
-					b.Send(c.Message.Chat, "Could not get profile info.")
-					break
+					errmsg := fmt.Sprintf("Internal error: no user `%s` in database. Please report error to developers.", c.Sender.Username)
+					b.Send(c.Message.Chat, errmsg)
 				}
-				p := menu.NewProfile(c.Sender.Username, res.XPPoints, res.GamesWon, res.GamesLost, res.LastPlayed)
 				b.Send(c.Message.Chat, p.MsgContent(), p.ReplyMarkup(), tb.ModeHTML)
-			case "mainmenu|balance":
+
 			case "mainmenu|ranking":
+
 			case "mainmenu|how_to_play":
 				msg.setCurrState(menu.NewTutorial())
+
+			case "mainmenu|join_game":
+				game.RegisterParticipant(c, db) != nil {
+					fmt.Println("Couldn't add new participants")
+				}
+				msg.setCurrState(menu.NewPlay(host, game.GetParticipants(c, db)))
+				fmt.Println(game.GetParticipants(c, db), c.Sender.Username, c.Message.Chat.ID, c.Sender.ID)
+
+			case "mainmenu|quit_game":
+			case "mainmenu|start_game":
 			}
+
+			b.Respond(c)
 			msg.updateMsg(c)
 		})
 	})
