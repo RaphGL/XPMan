@@ -78,7 +78,7 @@ func ControlMenuDisplay(b *tb.Bot, db *sql.DB) {
 			case "mainmenu|play":
 				host = c.Sender.Username
 				msg.setCurrState(menu.NewPlay(c.Sender.Username, []string{}))
-				game.CreateGame(c, db)
+				game.Create(c, db)
 
 			case "mainmenu|profile":
 				p, err := menu.NewProfile(c, db)
@@ -94,14 +94,18 @@ func ControlMenuDisplay(b *tb.Bot, db *sql.DB) {
 				msg.setCurrState(menu.NewTutorial())
 
 			case "mainmenu|join_game":
-				game.RegisterParticipant(c, db) != nil {
-					fmt.Println("Couldn't add new participants")
-				}
+				game.RegisterParticipant(c, db)
+				// make sure that message doesn't get stuck on updating participants
+				msg.setPrevState()
 				msg.setCurrState(menu.NewPlay(host, game.GetParticipants(c, db)))
-				fmt.Println(game.GetParticipants(c, db), c.Sender.Username, c.Message.Chat.ID, c.Sender.ID)
 
 			case "mainmenu|quit_game":
+				game.RemoveParticipant(c, db)
+				msg.setPrevState()
+				msg.setCurrState(menu.NewPlay(host, game.GetParticipants(c, db)))
+
 			case "mainmenu|start_game":
+				game.Start(c, db)
 			}
 
 			b.Respond(c)

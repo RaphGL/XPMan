@@ -17,8 +17,7 @@ func SetupDB(db *sql.DB) {
 			xp_points INT NOT NULL DEFAULT 0,
 			games_won INT NOT NULL DEFAULT 0,
 			games_lost INT NOT NULL DEFAULT 0,
-			last_played DATE DEFAULT CURRENT_DATE(),
-			PRIMARY KEY ( telegram_uid )
+			last_played DATE DEFAULT CURRENT_DATE()
 		);
 	`)
 	db.Exec(`
@@ -26,7 +25,7 @@ func SetupDB(db *sql.DB) {
 			chat_id BIGINT NOT NULL, 
 			num_participants INT NOT NULL DEFAULT 1,
 			host_id INT NOT NULL,
-			PRIMARY KEY ( chat_id )
+			word VARCHAR(20)
 		);
 	`)
 	db.Exec(`
@@ -37,8 +36,7 @@ func SetupDB(db *sql.DB) {
 			attempts_available INT NOT NULL DEFAULT 0,
 			ncoins INT NOT NULL DEFAULT 0,
 			guessed_right VARCHAR(25) DEFAULT 0,
-			guessed_wrong VARCHAR(25) DEFAULT 0,
-			PRIMARY KEY ( chat_id )
+			guessed_wrong VARCHAR(25) DEFAULT 0
 		);
 	`)
 	db.Exec(`
