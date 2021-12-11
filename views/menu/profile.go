@@ -6,17 +6,18 @@ import (
 	"strings"
 
 	"github.com/RaphGL/XPMan/models"
+	"github.com/RaphGL/XPMan/views"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-func NewProfile(c *tb.Callback, db *sql.DB) (MenuHandle, error) {
+func NewProfile(c *tb.Callback, db *sql.DB) (views.MenuHandle, error) {
 	res, err := models.UserInfo(c.Sender.ID, db)
 	if err != nil {
 		return nil, fmt.Errorf("Could not get profile for %s", c.Sender.Username)
 	}
-	p := BaseMenu{}
-	p.rm = &tb.ReplyMarkup{}
-	p.msg = fmt.Sprintln(
+	p := views.BaseMenu{}
+	p.Rm = &tb.ReplyMarkup{}
+	p.Msg = fmt.Sprintln(
 		fmt.Sprintf("%s%s%s", "<b>", strings.ToUpper(c.Sender.Username), "</b>"), "\n",
 		"<b>Level:</b>", res.XPPoints/100, "\n",
 		"<b>Games Won:</b>", res.GamesWon, "\n",

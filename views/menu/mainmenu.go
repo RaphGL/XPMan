@@ -1,10 +1,11 @@
 package menu
 
 import (
+	"github.com/RaphGL/XPMan/views"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-func NewMainMenu() MenuHandle {
+func NewMainMenu() views.MenuHandle {
 	menu := &tb.ReplyMarkup{}
 	menu.Inline(
 		menu.Row(
@@ -20,9 +21,9 @@ func NewMainMenu() MenuHandle {
 		),
 	)
 
-	m := BaseMenu{}
-	m.rm = menu
-	m.msg = `
+	m := views.BaseMenu{}
+	m.Rm = menu
+	m.Msg = `
 	Welcome to the <b>XPManBot</b>. 
 	This bot is currently in beta and may not function properly. 
 	If you wish to report any issues with the bot or suggest new gaming modes. Please click on <i>Contribute Code</i>

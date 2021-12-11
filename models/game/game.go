@@ -58,6 +58,13 @@ func RegisterParticipant(c *tb.Callback, db *sql.DB) error {
 		if err != nil {
 			return err
 		}
+
+		_, err = db.Exec(`
+			UPDATE active_games SET num_participants = num_participants + 1 WHERE chat_id = ?;
+		`, c.Message.Chat.ID)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -84,6 +91,13 @@ func RemoveParticipant(c *tb.Callback, db *sql.DB) error {
 	_, err := db.Exec(`
 		DELETE FROM active_matches WHERE chat_id = ? AND participant_uid = ?;
 	`, c.Message.Chat.ID, c.Sender.ID)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec(`
+		UPDATE active_games SET num_participants = num_participants - 1 WHERE chat_id = ?;
+	`, c.Message.Chat.ID)
 	if err != nil {
 		return err
 	}

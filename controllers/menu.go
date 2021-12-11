@@ -7,16 +7,17 @@ import (
 	"strings"
 
 	"github.com/RaphGL/XPMan/models/game"
+	"github.com/RaphGL/XPMan/views"
 	"github.com/RaphGL/XPMan/views/menu"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
 // Menu message struct with state management methods
 type menuMsg struct {
-	senderMsg *tb.Message     // Received message struct
-	bot       *tb.Bot         // Running bot instance
-	cView     menu.MenuHandle // Current view
-	pView     *list.List      // Previous views in stack
+	senderMsg *tb.Message      // Received message struct
+	bot       *tb.Bot          // Running bot instance
+	cView     views.MenuHandle // Current view
+	pView     *list.List       // Previous views in stack
 }
 
 // Retuns a menuMsg struct
@@ -30,12 +31,12 @@ func newMenuMsg(b *tb.Bot, m *tb.Message) menuMsg {
 }
 
 // Retrieve the current menu view
-func (mm *menuMsg) currState() menu.MenuHandle {
+func (mm *menuMsg) currState() views.MenuHandle {
 	return mm.cView
 }
 
 // Set current menu view struct
-func (mm *menuMsg) setCurrState(ms menu.MenuHandle) {
+func (mm *menuMsg) setCurrState(ms views.MenuHandle) {
 	mm.pView.PushFront(mm.currState())
 	mm.cView = ms
 }
@@ -46,7 +47,7 @@ func (mm *menuMsg) setPrevState() {
 	mm.pView.PushFront(mm.currState())
 	defer mm.pView.Remove(s)
 
-	pState, ok := (s.Value).(menu.MenuHandle)
+	pState, ok := (s.Value).(views.MenuHandle)
 	if ok {
 		mm.setCurrState(pState)
 	}

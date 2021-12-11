@@ -1,8 +1,11 @@
 package menu
 
-import tb "gopkg.in/tucnak/telebot.v2"
+import (
+	"github.com/RaphGL/XPMan/views"
+	tb "gopkg.in/tucnak/telebot.v2"
+)
 
-func NewTutorial() MenuHandle {
+func NewTutorial() views.MenuHandle {
 	// game instruction message
 	gi := &tb.ReplyMarkup{}
 	gi.Inline(
@@ -10,9 +13,9 @@ func NewTutorial() MenuHandle {
 			gi.Data("◀️ Back", "mainmenu", "back"),
 		),
 	)
-	htp := BaseMenu{}
-	htp.rm = gi
-	htp.msg = `<b>HOW TO PLAY</b>
+	htp := views.BaseMenu{}
+	htp.Rm = gi
+	htp.Msg = `<b>HOW TO PLAY</b>
 	XPMan is a hangman like game. You're given a word to guess. People will take turns in guessing a letter of the word. For each correct answer you earn a XP and coins and are allowed to either continue playing or pay coins to skip your turn, player with the most XP in the end wins.
 	
 	<b><i>Coins</i></b>
