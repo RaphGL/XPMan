@@ -33,6 +33,7 @@ func SetupDB(db *sql.DB) {
 			chat_id BIGINT NOT NULL,
 			part_username VARCHAR(20) NOT NULL,
 			participant_uid INT NOT NULL,
+			game_uid INT,
 			attempts_available INT NOT NULL DEFAULT 0,
 			ncoins INT NOT NULL DEFAULT 0,
 			guessed_right VARCHAR(25) DEFAULT 0,

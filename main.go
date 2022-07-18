@@ -49,11 +49,18 @@ func main() {
 	}
 
 	// set up database
+	fmt.Print("Checking database...")
 	models.SetupDB(db)
-	models.PopulateDictDB(db)
-	controllers.ControlMenuDisplay(b, db)
+	fmt.Println("done")
 
+	fmt.Print("Checking game data...")
+	models.PopulateDictDB(db)
+	fmt.Println("done")
+
+	// load menu
+	controllers.ControlMenuDisplay(b, db)
 	// show start menu
 
+	fmt.Println("Starting bot...")
 	b.Start()
 }

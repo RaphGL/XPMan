@@ -51,10 +51,17 @@ func RegisterParticipant(c *tb.Callback, db *sql.DB) error {
 		return err
 		// if user doesn't exist it adds them to the active_matches table
 	} else if !exists {
+		num_participants_query := db.QueryRow(`
+		SELECT num_participants FROM active_games WHERE active_games.chat_id = ?;
+		`, c.Message.Chat.ID)
+		var n_participants int
+		num_participants_query.Scan(&n_participants)
+		fmt.Println(n_participants)
+
 		_, err = db.Exec(`
-			INSERT INTO active_matches (chat_id, part_username, participant_uid) 
-			VALUES (?, ?, ?);
-		`, c.Message.Chat.ID, c.Sender.Username, c.Sender.ID)
+			INSERT INTO active_matches (chat_id, part_username, participant_uid, game_uid) 
+			VALUES (?, ?, ?, ?);
+		`, c.Message.Chat.ID, c.Sender.Username, c.Sender.ID, n_participants)
 		if err != nil {
 			return err
 		}
@@ -96,7 +103,7 @@ func RemoveParticipant(c *tb.Callback, db *sql.DB) error {
 	}
 
 	_, err = db.Exec(`
-		UPDATE active_games SET num_participants = num_participants - 1 WHERE chat_id = ?;
+		UPDATE active_games SET num_participants = num_participants - 1 WHERE chat_id = ? AND num_participants > 0;
 	`, c.Message.Chat.ID)
 	if err != nil {
 		return err
@@ -105,7 +112,7 @@ func RemoveParticipant(c *tb.Callback, db *sql.DB) error {
 }
 
 // Picks a word at to be played
-func Start(c *tb.Callback, db *sql.DB) error {
+func Start(b *tb.Bot, c *tb.Callback, db *sql.DB) error {
 	var hostID int
 	err := db.QueryRow(`
 		SELECT host_id FROM active_games WHERE chat_id = ?;
@@ -129,10 +136,9 @@ func Start(c *tb.Callback, db *sql.DB) error {
 		if err != nil {
 			return err
 		}
+		b.Delete(c.Message)
 		return nil
 	}
 
 	return errors.New("Callback is not from host")
 }
-
-func SetGameScore() {}

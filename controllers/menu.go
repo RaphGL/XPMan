@@ -8,6 +8,7 @@ import (
 
 	"github.com/RaphGL/XPMan/models/game"
 	"github.com/RaphGL/XPMan/views"
+	"github.com/RaphGL/XPMan/views/match"
 	"github.com/RaphGL/XPMan/views/menu"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -106,7 +107,9 @@ func ControlMenuDisplay(b *tb.Bot, db *sql.DB) {
 				msg.setCurrState(menu.NewPlay(host, game.GetParticipants(c, db)))
 
 			case "mainmenu|start_game":
-				game.Start(c, db)
+				if game.Start(b, c, db) == nil {
+					b.Send(c.Message.Chat, match.NewGuess(c))
+				}
 			}
 
 			b.Respond(c)
