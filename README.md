@@ -60,7 +60,7 @@ XPMan is a hangman like game for Telegram Messenger where players have to guess 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-To self-host this bot you will need to have the Go compiler installed on your system.
+To self-host this bot you will need to have the Go compiler and MariaDB installed on your system.
 
 ### Installation
 
@@ -77,11 +77,14 @@ To self-host this bot you will need to have the Go compiler installed on your sy
    ```js
    {
        "api_key": "your_api_key",
-       "database_setup": "root:password@tcp(ip_address:port)/database_name"
+       "database_setup": "root:password@tcp(ip_address:3306)/database_name"
    }
    ```
-
-
+5. Setup MariaDB and create the database:
+   ```sql
+   create database <database_name>;
+   ```
+After the first run the bot will do the remaining setting up requirements on its own, you're good to go!
 
 <!-- USAGE EXAMPLES -->
 ## Usage
