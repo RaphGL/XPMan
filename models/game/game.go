@@ -113,16 +113,31 @@ func RemoveParticipant(c *tb.Callback, db *sql.DB) error {
 
 // Picks a word at to be played
 func Start(b *tb.Bot, c *tb.Callback, db *sql.DB) error {
-	var hostID int
+	var numParticipants int
 	err := db.QueryRow(`
+	SELECT num_participants FROM active_games WHERE chat_id = ?;
+	`, c.Message.Chat.ID).Scan(&numParticipants)
+	if err != nil {
+		return err
+	}
+	if numParticipants < 2 {
+		b.Send(c.Message.Chat, "You need at least 2 participants to be able to play")
+		return errors.New("There aren't enough participants")
+	}
+
+	// retrieve the hostID
+	var hostID int
+	err = db.QueryRow(`
 		SELECT host_id FROM active_games WHERE chat_id = ?;
 	`, c.Message.Chat.ID).Scan(&hostID)
 	if err != nil {
 		return err
 	}
 
+	// make sure the hostID matches the request's
 	if hostID == c.Sender.ID {
 		var word string
+		// get a random word from the dictionary
 		err = db.QueryRow(`
 			SELECT word FROM game_dictionary ORDER BY RAND() LIMIT 1;
 		`).Scan(&word)
@@ -130,6 +145,7 @@ func Start(b *tb.Bot, c *tb.Callback, db *sql.DB) error {
 			return err
 		}
 
+		// make random word the game's word
 		_, err = db.Exec(`
 			UPDATE active_games SET word = ? WHERE chat_id = ?;
 		`, word, c.Message.Chat.ID)
